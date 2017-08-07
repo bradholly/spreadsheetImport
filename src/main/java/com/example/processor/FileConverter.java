@@ -1,6 +1,8 @@
 package com.example.processor;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.example.processor.filetype.OrderHeaderFile;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 
 @Component
@@ -124,10 +129,10 @@ public class FileConverter {
 
 					count++;
 				}
-				
+
 				orderHeaderFileList.add(orderHeaderFile);
 				dataLine = csvReader.readNext();
-	
+
 			}
 			return orderHeaderFileList;
 		} catch (IOException e) {
@@ -158,7 +163,7 @@ public class FileConverter {
 
 	public Date getDate(String dateStr) {
 		try {
-			final SimpleDateFormat sdf1 = new SimpleDateFormat("mm-dd-yy"); 
+			final SimpleDateFormat sdf1 = new SimpleDateFormat("mm/dd/yy"); 
 			java.util.Date date = sdf1.parse(dateStr); 
 			java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());
 			return sqlStartDate;
@@ -166,5 +171,30 @@ public class FileConverter {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public String getJson(List<OrderHeaderFile> orderHeaderFileList) {
+		String json = null;
+		final ObjectMapper mapper = new ObjectMapper();
+		final OutputStream out = new ByteArrayOutputStream();
+
+		try {
+			mapper.writeValue(out, orderHeaderFileList);
+
+			String result = out.toString();
+			System.out.println(new String(result));
+			return result;
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 }

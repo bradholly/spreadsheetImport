@@ -27,6 +27,8 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile('org.apache.commons:commons-lang3:3.6')
 	compile('com.opencsv:opencsv:3.10')	
+	compile('com.fasterxml.jackson.core:jackson-core:2.9.0')
+
 	
 	runtime('org.springframework.boot:spring-boot-devtools')
 

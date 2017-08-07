@@ -25,6 +25,9 @@ public class FileManager {
 	@Autowired
 	FileConverter fileConverter;
 
+	@Autowired
+	RestService restService;
+	
 	public void processFiles(StorageService storageService) {
 		logger.debug("start processFiles(StorageService storageService)");
 		
@@ -61,6 +64,13 @@ public class FileManager {
 					logger.debug("null orderHeaderFileList returned");
 					return;
 				}
+				String orderHeaderJson = fileConverter.getJson(orderHeaderFileList);
+				
+				if (null == orderHeaderJson) {
+					logger.debug("null orderHeaderJson returned");
+					return;
+				}
+				restService.putOrderHeader(orderHeaderJson);
 			}
 
 
