@@ -8,7 +8,7 @@ public final class Constants {
 
 	public static final String orderDetailFile = "orderdetail";
 	public static final String orderDetailUrl = jpaUrl + "orderDetails";
-	public static final String orderDetailSearchUrl = jpaUrl + "orderDetails/search/findByOrderNoAndItemNo";
+	public static final String orderDetailSearchUrl = jpaUrl.concat("orderDetails/search/findByOrderNoAndItemNo?orderNo={orderNo}&itemNo={itemNo}");
 	
 	public static final String leadTimeFile = "leadtime";
 	public static final String LeadTimeUrl = jpaUrl + "LeadTimes";
