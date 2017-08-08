@@ -71,12 +71,12 @@ public class FileManager {
 					return;
 				}
 				restService.putOrderHeader(orderHeaderJson);
+				
 			}
-
-
 		});
 		
-
+		storageService.deleteAll();
+		
 		logger.debug("finish processFiles(StorageService storageService)");
 	}
 }
