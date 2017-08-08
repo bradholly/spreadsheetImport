@@ -64,13 +64,13 @@ public class FileManager {
 					logger.debug("null orderHeaderFileList returned");
 					return;
 				}
-				String orderHeaderJson = fileConverter.getJson(orderHeaderFileList);
+				String orderHeaderJson = fileConverter.getJson(orderHeaderFileList.get(0));
 				
 				if (null == orderHeaderJson) {
 					logger.debug("null orderHeaderJson returned");
 					return;
 				}
-				restService.putOrderHeader(orderHeaderJson);
+				restService.putOrderHeader(orderHeaderFileList.get(0));
 				
 			}
 		});

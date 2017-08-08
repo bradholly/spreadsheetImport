@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.example.processor.filetype.OrderHeaderFile;
+import com.example.processor.filetype.UploadFile;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,9 +27,10 @@ public class FileConverter {
 	public List<OrderHeaderFile> getOrderHeaderContents(CSVReader csvReader) {
 		try {
 			OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
+			UploadFile uploadFile = new UploadFile();
 			List<OrderHeaderFile> orderHeaderFileList = new ArrayList<OrderHeaderFile>();
 
-			ArrayList<String> columnNames = orderHeaderFile.getColumnNames();
+			ArrayList<String> columnNames = uploadFile.getColumnNames();
 
 			String[] firstLine = csvReader.readNext();
 
@@ -68,7 +70,7 @@ public class FileConverter {
 						orderHeaderFile.setCustomer(Integer.valueOf(dataLine[position]));
 						break;
 					case 5:
-						orderHeaderFile.setWalmartDc(StringUtils.substring(dataLine[position],0,4));
+						orderHeaderFile.setWalmartDc(StringUtils.substring(dataLine[position],0,5));
 						break;
 					case 6:
 						orderHeaderFile.setOrderType(dataLine[position]);
@@ -173,7 +175,7 @@ public class FileConverter {
 		}
 	}
 
-	public String getJson(List<OrderHeaderFile> orderHeaderFileList) {
+	public String getJson(OrderHeaderFile orderHeaderFileList) {
 		String json = null;
 		final ObjectMapper mapper = new ObjectMapper();
 		final OutputStream out = new ByteArrayOutputStream();

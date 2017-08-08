@@ -19,14 +19,14 @@ public class RestService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-	public void putOrderHeader(String orderHeaderJson) {
+	public void putOrderHeader(OrderHeaderFile orderHeaderFile) {
 //        ApplicationContext context = new AnnotationConfigApplicationContext(RESTConfiguration.class);
 		final String url = "https://jpademo.local.pcfdev.io/orderHeaders";
 
 		RestTemplate rt = new RestTemplate();
 		rt.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		rt.getMessageConverters().add(new StringHttpMessageConverter());
-		String result = rt.postForObject(url, orderHeaderJson, String.class);
+		OrderHeaderFile result = rt.postForObject(url, orderHeaderFile, OrderHeaderFile.class);
 		
 		
 		

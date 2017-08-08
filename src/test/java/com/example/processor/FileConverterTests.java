@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.example.processor.filetype.OrderHeaderFile;
+import com.example.processor.filetype.UploadFile;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
@@ -24,9 +25,11 @@ public class FileConverterTests {
 	@Test
 	public void shouldReturnOneEntryMap() throws Exception {
 		final OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
+		final UploadFile uploadFile = new UploadFile();
+		
 		final String[] values = {"Hello","Goodbye","Cancel Order Flag"};
 
-		final Map<String,Integer> result = fileConverter.getColumnPositions(values, orderHeaderFile.getColumnNames());
+		final Map<String,Integer> result = fileConverter.getColumnPositions(values, uploadFile.getColumnNames());
 
 		assertEquals(result.size(), 1);
 		assertEquals(result.get(values[2]).intValue(), 2);
@@ -35,9 +38,10 @@ public class FileConverterTests {
 	@Test
 	public void shouldReturnTwoEntryMap() throws Exception {
 		final OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
+		final UploadFile uploadFile = new UploadFile();
 		final String[] values = {"Warehouse","Goodbye","Cancel Order Flag"};
 
-		final Map<String,Integer> result = fileConverter.getColumnPositions(values, orderHeaderFile.getColumnNames());
+		final Map<String,Integer> result = fileConverter.getColumnPositions(values, uploadFile.getColumnNames());
 
 		assertEquals(result.size(), 2);
 		assertEquals(result.get(values[0]).intValue(), 0);
