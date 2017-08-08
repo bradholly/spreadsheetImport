@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.example.processor.filetype.OrderHeaderFile;
-import com.example.processor.filetype.UploadFile;
+import com.example.processor.filetype.OrderHeaderFileDefinition;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
@@ -25,7 +25,7 @@ public class FileConverterTests {
 	@Test
 	public void shouldReturnOneEntryMap() throws Exception {
 		final OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
-		final UploadFile uploadFile = new UploadFile();
+		final OrderHeaderFileDefinition uploadFile = new OrderHeaderFileDefinition();
 		
 		final String[] values = {"Hello","Goodbye","Cancel Order Flag"};
 
@@ -38,7 +38,7 @@ public class FileConverterTests {
 	@Test
 	public void shouldReturnTwoEntryMap() throws Exception {
 		final OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
-		final UploadFile uploadFile = new UploadFile();
+		final OrderHeaderFileDefinition uploadFile = new OrderHeaderFileDefinition();
 		final String[] values = {"Warehouse","Goodbye","Cancel Order Flag"};
 
 		final Map<String,Integer> result = fileConverter.getColumnPositions(values, uploadFile.getColumnNames());

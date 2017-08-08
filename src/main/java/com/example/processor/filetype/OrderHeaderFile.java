@@ -1,10 +1,8 @@
 package com.example.processor.filetype;
 
 import java.sql.Date;
-import java.util.ArrayList;
 
 public class OrderHeaderFile {
-
 
 	private Integer orderNo;
 	private String poNbr;

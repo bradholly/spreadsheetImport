@@ -1,8 +1,6 @@
 package com.example.processor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,19 +13,30 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.example.processor.filetype.OrderDetailFile;
+import com.example.processor.filetype.OrderDetailFileDefinition;
 import com.example.processor.filetype.OrderHeaderFile;
-import com.example.processor.filetype.UploadFile;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.processor.filetype.OrderHeaderFileDefinition;
 import com.opencsv.CSVReader;
 
+/**
+ * Class of converters to bring CSVReader raw data data into the appropriate com.example.processor.filetype.* target class
+ * 
+ * @author Brad
+ *
+ */
 @Component
 public class FileConverter {
+	/**
+	 * Convert CSVReader into list of OrderHeaderFile
+	 * 
+	 * @param csvReader
+	 * @return
+	 */
 	public List<OrderHeaderFile> getOrderHeaderContents(CSVReader csvReader) {
 		try {
 			OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
-			UploadFile uploadFile = new UploadFile();
+			OrderHeaderFileDefinition uploadFile = new OrderHeaderFileDefinition();
 			List<OrderHeaderFile> orderHeaderFileList = new ArrayList<OrderHeaderFile>();
 
 			ArrayList<String> columnNames = uploadFile.getColumnNames();
@@ -110,25 +119,6 @@ public class FileConverter {
 						break;
 					}
 
-					//					columnNames.add("OrderNoCompany");			//0
-					//					columnNames.add("PONum");					//1
-					//					columnNames.add("Warehouse");				//2
-					//					columnNames.add("Division");				//3
-					//					columnNames.add("Customer");				//4
-					//					columnNames.add("Store");					//5
-					//					columnNames.add("OrderType");				//6
-					//					columnNames.add("OrderReference");			//7
-					//					columnNames.add("OrderDate");				//8
-					//					columnNames.add("MABDate");					//9
-					//					columnNames.add("CancelDate");				//10
-					//					columnNames.add("PriorityDate");			//11
-					//					columnNames.add("ShipOnDate");				//12
-					//					columnNames.add("CfmShipOnDate");			//13
-					//					columnNames.add("CalculatedShipOnDate");	//14
-					//					columnNames.add("InvoiceDate");				//15
-					//					columnNames.add("Open Order Flag");			//16
-					//					columnNames.add("Cancel Order Flag");		//17					
-
 					count++;
 				}
 
@@ -175,28 +165,98 @@ public class FileConverter {
 		}
 	}
 
-	public String getJson(OrderHeaderFile orderHeaderFileList) {
-		String json = null;
-		final ObjectMapper mapper = new ObjectMapper();
-		final OutputStream out = new ByteArrayOutputStream();
+//	public String getJson(OrderHeaderFile orderHeaderFile) {
+//		String json = null;
+//		final ObjectMapper mapper = new ObjectMapper();
+//		final OutputStream out = new ByteArrayOutputStream();
+//
+//		try {
+//			mapper.writeValue(out, orderHeaderFile);
+//
+//			String result = out.toString();
+//			System.out.println(new String(result));
+//			return result;
+//		} catch (JsonGenerationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (JsonMappingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		return null;
+//	}
 
+	public List<OrderDetailFile> getOrderDetailContents(CSVReader csvReader) {
 		try {
-			mapper.writeValue(out, orderHeaderFileList);
+			OrderDetailFile orderDetailFile = new OrderDetailFile();
+			OrderDetailFileDefinition uploadFile = new OrderDetailFileDefinition();
+			List<OrderDetailFile> orderDetailFileList = new ArrayList<OrderDetailFile>();
 
-			String result = out.toString();
-			System.out.println(new String(result));
-			return result;
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ArrayList<String> columnNames = uploadFile.getColumnNames();
+
+			String[] firstLine = csvReader.readNext();
+
+			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
+
+			if (columnNames.size() != columnPositions.size()) {
+				System.out.println("column position map size not equal column name list size");
+				return null;
+			}
+
+			String[] dataLine = csvReader.readNext();
+
+			// read file lines
+			while(dataLine != null) {
+				orderDetailFile = new OrderDetailFile();
+				Iterator<String> i = columnNames.iterator();
+				Integer count = 0;
+				
+				// read file columns
+				while (i.hasNext()) {
+					String columnName = i.next();
+					Integer position = columnPositions.get(columnName);
+
+					switch (count) {
+					case 0: 
+						orderDetailFile.setOrderNo(Integer.valueOf(dataLine[position]));
+						break;
+					case 1:
+						orderDetailFile.setItemNo(Integer.valueOf(dataLine[position]));
+						break;
+					case 2:
+						orderDetailFile.setOrdQty(Integer.valueOf(dataLine[position]));
+						break;
+					case 3:
+						orderDetailFile.setOpenQty(Integer.valueOf(dataLine[position]));
+						break;
+					case 4:
+						orderDetailFile.setCancelQty(Integer.valueOf(dataLine[position]));
+						break;
+					case 5:
+						orderDetailFile.setAllocQty(Integer.valueOf(dataLine[position]));
+						break;
+					case 6:
+						orderDetailFile.setPickQty(Integer.valueOf(dataLine[position]));
+						break;
+					case 7:
+						orderDetailFile.setShipQty(Integer.valueOf(dataLine[position]));
+						break;
+					}
+					count++;
+				}
+
+				orderDetailFileList.add(orderDetailFile);
+				dataLine = csvReader.readNext();
+
+			}
+			return orderDetailFileList;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();	
 		}
-
 		return null;
 	}
 }
