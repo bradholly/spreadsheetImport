@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,25 +14,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.example.processor.filetype.LeadTimeFile;
 import com.example.processor.filetype.OrderDetailFile;
 import com.example.processor.filetype.OrderHeaderFile;
+import com.example.processor.filetype.SkuFile;
 import com.example.storage.StorageService;
 import com.example.util.Constants;
 import com.opencsv.CSVReader;
 
 @Component
 public class FileManager {
-    Logger logger = LoggerFactory.getLogger(FileManager.class);
-	
+	Logger logger = LoggerFactory.getLogger(FileManager.class);
+
 	@Autowired
 	FileConverter fileConverter;
 
 	@Autowired
 	RestService restService;
-	
+
 	public void processFiles(StorageService storageService) {
 		logger.debug("start processFiles(StorageService storageService)");
-		
+
 		Stream<Path> stream = storageService.loadAll();
 
 		// iterate files from the storageService object
@@ -60,25 +61,40 @@ public class FileManager {
 				processLeadTimeFile(csvReader);
 			}
 		});
-		
+
 		storageService.deleteAll();
-		
+
 		logger.debug("finish processFiles(StorageService storageService)");
 	}
-	
+
 	private void processLeadTimeFile(CSVReader csvReader) {
-		// TODO Auto-generated method stub
-		
+		logger.debug("converting lead time type file");
+		List<LeadTimeFile> leadTimeFileList = new ArrayList<LeadTimeFile>();
+		leadTimeFileList = fileConverter.getLeadTimeContents(csvReader);
+		if (null == leadTimeFileList) {
+			logger.debug("null orderHeaderFileList returned");
+			return;
+		}
+
+		leadTimeFileList.forEach(leadTimeFile->restService.putLeadTime(leadTimeFile));
+
 	}
 
 	private void processSkuFile(CSVReader csvReader) {
-		// TODO Auto-generated method stub
-		
+		logger.debug("converting sku type file");
+		List<SkuFile> skuFileList = new ArrayList<SkuFile>();
+		skuFileList = fileConverter.getSkuContents(csvReader);
+		if (null == skuFileList) {
+			logger.debug("null skuFileList returned");
+			return;
+		}
+
+		skuFileList.forEach(skuFile->restService.putSku(skuFile));
 	}
 
 	private void processPimFile(CSVReader csvReader) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void processOrderDetailFile(CSVReader csvReader) {
@@ -86,18 +102,11 @@ public class FileManager {
 		List<OrderDetailFile> orderDetailFileList = new ArrayList<OrderDetailFile>();
 		orderDetailFileList = fileConverter.getOrderDetailContents(csvReader);
 		if (null == orderDetailFileList) {
-			logger.debug("null orderHeaderFileList returned");
+			logger.debug("null orderDetailFileList returned");
 			return;
 		}
-//		String orderHeaderJson = fileConverter.getJson(orderDetailFileList.get(0));
-		
-//		if (null == orderHeaderJson) {
-//			logger.debug("null orderHeaderJson returned");
-//			return;
-//		}
-		
+
 		orderDetailFileList.forEach(orderDetailFile->restService.putOrderDetail(orderDetailFile));
-		
 	}
 
 	private CSVReader getCsvReader(StorageService storageService, Path filename) {
@@ -127,13 +136,13 @@ public class FileManager {
 			logger.debug("null orderHeaderFileList returned");
 			return;
 		}
-//		String orderHeaderJson = fileConverter.getJson(orderHeaderFileList.get(0));
-//		
-//		if (null == orderHeaderJson) {
-//			logger.debug("null orderHeaderJson returned");
-//			return;
-//		}
-		
+		//		String orderHeaderJson = fileConverter.getJson(orderHeaderFileList.get(0));
+		//		
+		//		if (null == orderHeaderJson) {
+		//			logger.debug("null orderHeaderJson returned");
+		//			return;
+		//		}
+
 		orderHeaderFileList.forEach(orderHeaderFile->restService.putOrderHeader(orderHeaderFile));
 	}
 }

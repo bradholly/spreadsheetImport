@@ -1,6 +1,7 @@
 package com.example.processor;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,10 +14,14 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.example.processor.filetype.LeadTimeFile;
+import com.example.processor.filetype.LeadTimeFileDefinition;
 import com.example.processor.filetype.OrderDetailFile;
 import com.example.processor.filetype.OrderDetailFileDefinition;
 import com.example.processor.filetype.OrderHeaderFile;
 import com.example.processor.filetype.OrderHeaderFileDefinition;
+import com.example.processor.filetype.SkuFile;
+import com.example.processor.filetype.SkuFileDefinition;
 import com.opencsv.CSVReader;
 
 /**
@@ -165,30 +170,42 @@ public class FileConverter {
 		}
 	}
 
-//	public String getJson(OrderHeaderFile orderHeaderFile) {
-//		String json = null;
-//		final ObjectMapper mapper = new ObjectMapper();
-//		final OutputStream out = new ByteArrayOutputStream();
-//
-//		try {
-//			mapper.writeValue(out, orderHeaderFile);
-//
-//			String result = out.toString();
-//			System.out.println(new String(result));
-//			return result;
-//		} catch (JsonGenerationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return null;
-//	}
+	public Date getDateFromTimestamp(String dateStr) {
+		try {
+			final SimpleDateFormat sdf1 = new SimpleDateFormat("M/d/y H:m"); 
+			java.util.Date date = sdf1.parse(dateStr); 
+			java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());
+			return sqlStartDate;
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	//	public String getJson(OrderHeaderFile orderHeaderFile) {
+	//		String json = null;
+	//		final ObjectMapper mapper = new ObjectMapper();
+	//		final OutputStream out = new ByteArrayOutputStream();
+	//
+	//		try {
+	//			mapper.writeValue(out, orderHeaderFile);
+	//
+	//			String result = out.toString();
+	//			System.out.println(new String(result));
+	//			return result;
+	//		} catch (JsonGenerationException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		} catch (JsonMappingException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		} catch (IOException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//
+	//		return null;
+	//	}
 
 	public List<OrderDetailFile> getOrderDetailContents(CSVReader csvReader) {
 		try {
@@ -214,7 +231,7 @@ public class FileConverter {
 				orderDetailFile = new OrderDetailFile();
 				Iterator<String> i = columnNames.iterator();
 				Integer count = 0;
-				
+
 				// read file columns
 				while (i.hasNext()) {
 					String columnName = i.next();
@@ -254,6 +271,174 @@ public class FileConverter {
 
 			}
 			return orderDetailFileList;
+		} catch (IOException e) {
+			e.printStackTrace();	
+		}
+		return null;
+	}
+
+	public List<SkuFile> getSkuContents(CSVReader csvReader) {
+		try {
+			SkuFile skuFile = new SkuFile();
+			SkuFileDefinition uploadFile = new SkuFileDefinition();
+			List<SkuFile> skuFileList = new ArrayList<SkuFile>();
+
+			ArrayList<String> columnNames = uploadFile.getColumnNames();
+
+			String[] firstLine = csvReader.readNext();
+
+			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
+
+			if (columnNames.size() != columnPositions.size()) {
+				System.out.println("column position map size not equal column name list size");
+				return null;
+			}
+
+			String[] dataLine = csvReader.readNext();
+
+			// read file lines
+			while(dataLine != null) {
+				skuFile = new SkuFile();
+				Iterator<String> i = columnNames.iterator();
+				Integer count = 0;
+
+				// read file columns
+				while (i.hasNext()) {
+					String columnName = i.next();
+					Integer position = columnPositions.get(columnName);
+
+					switch (count) {
+					case 0: 
+						skuFile.setItemNo(Integer.valueOf(dataLine[position]));
+						break;
+					case 1:
+						skuFile.setSeason(dataLine[position]);
+						break;
+					case 2:
+						skuFile.setStyle(dataLine[position]);
+						break;
+					case 3:
+						skuFile.setColor(dataLine[position]);
+						break;
+					case 4:
+						skuFile.setDim(dataLine[position]);
+						break;
+					case 5:
+						skuFile.setSize(dataLine[position]);
+						break;
+					case 6:
+						skuFile.setDivision(Integer.valueOf(dataLine[position]));
+						break;
+					case 7:
+						if(StringUtils.isNumeric(dataLine[position])) {
+							skuFile.setUnitPrice(new BigDecimal(dataLine[position]));
+						}
+						break;
+					case 8:
+						skuFile.setUpc(dataLine[position]);
+						break;
+					case 9:
+						skuFile.setGtin(dataLine[position]);
+						break;
+					case 10:
+						skuFile.setWmStyle(dataLine[position]);
+						break;
+					case 11:
+						skuFile.setWmItem(dataLine[position]);
+						break;
+					case 12:
+						if(StringUtils.isNumeric(dataLine[position])) {
+							skuFile.setFineLine(Integer.valueOf(dataLine[position]));							
+						}
+						break;
+					}
+					count++;
+				}
+
+				skuFileList.add(skuFile);
+				dataLine = csvReader.readNext();
+
+			}
+			return skuFileList;
+		} catch (IOException e) {
+			e.printStackTrace();	
+		}
+		return null;
+	}
+
+	public List<LeadTimeFile> getLeadTimeContents(CSVReader csvReader) {
+		try {
+			LeadTimeFile leadTimeFile = new LeadTimeFile();
+			LeadTimeFileDefinition uploadFile = new LeadTimeFileDefinition();
+			List<LeadTimeFile> leadTimeFileList = new ArrayList<LeadTimeFile>();
+
+			ArrayList<String> columnNames = uploadFile.getColumnNames();
+
+			String[] firstLine = csvReader.readNext();
+
+			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
+
+			if (columnNames.size() != columnPositions.size()) {
+				System.out.println("column position map size not equal column name list size");
+				return null;
+			}
+
+			String[] dataLine = csvReader.readNext();
+
+			// read file lines
+			while(dataLine != null) {
+				leadTimeFile = new LeadTimeFile();
+				Iterator<String> i = columnNames.iterator();
+				Integer count = 0;
+
+				// read file columns
+				while (i.hasNext()) {
+					String columnName = i.next();
+					Integer position = columnPositions.get(columnName);
+
+					switch (count) {
+					case 0: 
+						leadTimeFile.setOrderType(StringUtils.leftPad(dataLine[position], 4, "0"));
+						break;
+					case 1:
+						leadTimeFile.setWarehouse(dataLine[position]);
+						break;
+					case 2:
+						leadTimeFile.setWalmartDc(StringUtils.leftPad(dataLine[position], 5, "0"));
+						break;
+					case 3:
+						leadTimeFile.setCity(dataLine[position]);
+						break;
+					case 4:
+						leadTimeFile.setState(dataLine[position]);
+						break;
+					case 5:
+						leadTimeFile.setMileage(Integer.valueOf(dataLine[position]));
+						break;
+					case 6:
+						leadTimeFile.setSafetyDays(Integer.valueOf(dataLine[position]));
+						break;
+					case 7:
+						leadTimeFile.setShipLeadTime(Integer.valueOf(dataLine[position]));	
+						break;
+					case 8:
+						leadTimeFile.setCreatedDate(getDateFromTimestamp(dataLine[position]));
+						break;
+					case 9:
+						leadTimeFile.setUpdatedDate(getDate(dataLine[position]));
+						break;
+					case 10:
+						leadTimeFile.setUpdatedUser(dataLine[position]);
+						break;
+					}
+					count++;
+				}
+
+				leadTimeFileList.add(leadTimeFile);
+				dataLine = csvReader.readNext();
+
+			}
+			return leadTimeFileList;
 		} catch (IOException e) {
 			e.printStackTrace();	
 		}

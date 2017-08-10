@@ -1,5 +1,7 @@
 package com.example.processor.filetype;
 
+import com.example.processor.filetype.links.Links;
+
 public class OrderDetailFile {
 	private Integer orderDetailPk;
 	private Integer orderNo;		//0
@@ -10,6 +12,7 @@ public class OrderDetailFile {
 	private Integer allocQty;		//5
 	private Integer pickQty;		//6
 	private Integer shipQty;		//7
+	private Links _links;
 	
 	public Integer getOrderDetailPk() {
 		return orderDetailPk;
@@ -64,6 +67,12 @@ public class OrderDetailFile {
 	}
 	public void setShipQty(Integer shipQty) {
 		this.shipQty = shipQty;
+	}
+	public Links get_links() {
+		return _links;
+	}
+	public void set_links(Links _links) {
+		this._links = _links;
 	}
 	
 	
