@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.example.processor.filetype.LeadTimeFile;
 import com.example.processor.filetype.OrderDetailFile;
 import com.example.processor.filetype.OrderHeaderFile;
+import com.example.processor.filetype.PimFile;
 import com.example.processor.filetype.SkuFile;
 import com.example.storage.StorageService;
 import com.example.util.Constants;
@@ -54,7 +55,9 @@ public class FileManager {
 			} else if (filename.toString().contains(Constants.orderDetailFile)) {
 				processOrderDetailFile(csvReader);
 			} else if (filename.toString().contains(Constants.pimFile)) {
-				processPimFile(csvReader);				
+				processPimFile(csvReader);
+			} else if (filename.toString().contains(Constants.pimCarryoverFile)) {
+				processPimCarryoverFile(csvReader);		
 			} else if (filename.toString().contains(Constants.skuFile)) {
 				processSkuFile(csvReader);
 			} else if (filename.toString().contains(Constants.leadTimeFile)) {
@@ -93,8 +96,27 @@ public class FileManager {
 	}
 
 	private void processPimFile(CSVReader csvReader) {
-		// TODO Auto-generated method stub
+		logger.debug("converting pim type file");
+		List<PimFile> pimFileList = new ArrayList<PimFile>();
+		pimFileList = fileConverter.getPimContents(csvReader);
+		if (null == pimFileList) {
+			logger.debug("null pimFileList returned");
+			return;
+		}
 
+		pimFileList.forEach(pimFile->restService.putPim(pimFile));
+	}
+	
+	private void processPimCarryoverFile(CSVReader csvReader) {
+		logger.debug("converting pim carryover type file");
+		List<PimFile> pimFileList = new ArrayList<PimFile>();
+		pimFileList = fileConverter.getPimCarryoverContents(csvReader);
+		if (null == pimFileList) {
+			logger.debug("null pimFileList returned");
+			return;
+		}
+
+		pimFileList.forEach(pimFile->restService.putPim(pimFile));
 	}
 
 	private void processOrderDetailFile(CSVReader csvReader) {

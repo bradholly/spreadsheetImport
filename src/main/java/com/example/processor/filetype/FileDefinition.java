@@ -5,16 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileDefinition {
-	private String fileNameContains = "";
 	private ArrayList<String> columnNames = new ArrayList<String>();
 	private Map<String,Integer> columnPositions = new HashMap<String,Integer>();
 	
-	public String getFileNameContains() {
-		return fileNameContains;
-	}
-	public void setFileNameContains(String fileNameContains) {
-		this.fileNameContains = fileNameContains;
-	}
 	public ArrayList<String> getColumnNames() {
 		return columnNames;
 	}

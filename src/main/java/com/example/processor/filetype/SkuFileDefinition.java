@@ -2,13 +2,9 @@ package com.example.processor.filetype;
 
 import java.util.ArrayList;
 
-import com.example.util.Constants;
-
 public class SkuFileDefinition extends FileDefinition {
 	public SkuFileDefinition() {
 		ArrayList<String> columnNames = getColumnNames();
-
-		setFileNameContains(Constants.orderHeaderFile);
 						
 		columnNames.add("ItemNo");			//0
 		columnNames.add("Season");			//1

@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.processor.filetype.LeadTimeFile;
 import com.example.processor.filetype.OrderDetailFile;
 import com.example.processor.filetype.OrderHeaderFile;
+import com.example.processor.filetype.PimFile;
 import com.example.processor.filetype.SkuFile;
 import com.example.util.Constants;
 import com.example.util.LoggingRequestInterceptor;
@@ -142,5 +143,10 @@ public class RestService {
 		} catch (Exception e) {
 			logger.error("error calling lead time search service", e);
 		}
+	}
+
+	public Object putPim(PimFile pimFile) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

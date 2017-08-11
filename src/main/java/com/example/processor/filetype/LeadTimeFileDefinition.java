@@ -2,13 +2,9 @@ package com.example.processor.filetype;
 
 import java.util.ArrayList;
 
-import com.example.util.Constants;
-
 public class LeadTimeFileDefinition extends FileDefinition {
 	public LeadTimeFileDefinition() {
 		ArrayList<String> columnNames = getColumnNames();
-
-		setFileNameContains(Constants.orderHeaderFile);
 						
 		columnNames.add("ORDERTYPE");			//0
 		columnNames.add("WAREHOUSE");			//1

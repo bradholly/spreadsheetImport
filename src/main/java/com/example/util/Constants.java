@@ -14,7 +14,8 @@ public final class Constants {
 	public static final String LeadTimeUrl = jpaUrl.concat("leadTimes");
 	public static final String LeadTimeSearchUrl = jpaUrl.concat("leadTimes/search/findByOrderTypeAndWarehouseAndWalmartDc?orderType={orderType}&warehouse={warehouse}&walmartDc={walmartDc}");
 	
-	public static final String pimFile = "pim";
+	public static final String pimFile = "pimregular";
+	public static final String pimCarryoverFile = "pimcarryover";
 	public static final String pimUrl = jpaUrl.concat("orderPims");
 	
 	public static final String skuFile = "sku";

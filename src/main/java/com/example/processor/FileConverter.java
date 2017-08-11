@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,10 @@ import com.example.processor.filetype.OrderDetailFile;
 import com.example.processor.filetype.OrderDetailFileDefinition;
 import com.example.processor.filetype.OrderHeaderFile;
 import com.example.processor.filetype.OrderHeaderFileDefinition;
+import com.example.processor.filetype.PimCarryOverFileDefinition;
+import com.example.processor.filetype.PimDelivery;
+import com.example.processor.filetype.PimFile;
+import com.example.processor.filetype.PimFileDefinition;
 import com.example.processor.filetype.SkuFile;
 import com.example.processor.filetype.SkuFileDefinition;
 import com.opencsv.CSVReader;
@@ -443,5 +448,176 @@ public class FileConverter {
 			e.printStackTrace();	
 		}
 		return null;
+	}
+
+	public List<PimFile> getPimContents(CSVReader csvReader) {
+		try {
+			PimFile pimFile = new PimFile();
+			PimFileDefinition uploadFile = new PimFileDefinition();
+			List<PimFile> pimFileList = new ArrayList<PimFile>();
+
+			ArrayList<String> columnNames = uploadFile.getColumnNames();
+
+			String[] firstLine = csvReader.readNext();
+
+			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
+
+			if (columnNames.size() != columnPositions.size()) {
+				System.out.println("column position map size not equal column name list size");
+				return null;
+			}
+
+			String[] dataLine = csvReader.readNext();
+
+			// read file lines
+			while(dataLine != null) {
+				
+				pimFile = new PimFile();
+
+				List<PimDelivery> pimDeliveries = getPimDeliveries(dataLine, columnPositions);
+				Iterator<PimDelivery> itr = pimDeliveries.iterator();
+				while(itr.hasNext()) {
+					PimDelivery pimDelivery = itr.next();
+					pimFile.setCancelDate(pimDelivery.getCancelDate());
+					pimFile.setInDcDate(pimDelivery.getInDcDate());
+					pimFile.setShipDate(pimDelivery.getShipDate());
+					pimFile.setOrdQty(pimDelivery.getOrdQty());
+					pimFile.setPackQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.vendorPackQty)]));
+					pimFile.setUnitPrice(new BigDecimal(dataLine[columnPositions.get(PimFileDefinition.price)]));
+					pimFile.setUpc(dataLine[columnPositions.get(PimFileDefinition.upc)]);
+					pimFile.setVendorSku(dataLine[columnPositions.get(PimFileDefinition.upc)]);
+					
+					pimFileList.add(pimFile);
+				}
+
+				dataLine = csvReader.readNext();
+
+			}
+			return pimFileList;
+		} catch (IOException e) {
+			e.printStackTrace();	
+		}
+		return null;
+	}
+
+	/**
+	 * If there's an ordered qty for one of the delivery windows, return the qty and dates as list entries
+	 * 
+	 * @param dataLine
+	 * @param columnPositions
+	 * @return
+	 */
+	private List<PimDelivery> getPimDeliveries(String[] dataLine, Map<String, Integer> columnPositions) {
+		List<PimDelivery> pimDeliveries = new ArrayList<PimDelivery>();
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty1)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty1)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate1)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimFileDefinition.inDcDate1)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimFileDefinition.startShipDate1)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty2)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty2)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate2)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimFileDefinition.inDcDate2)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimFileDefinition.startShipDate2)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		return pimDeliveries;
+	}
+
+	public List<PimFile> getPimCarryoverContents(CSVReader csvReader) {
+		try {
+			PimFile pimFile = new PimFile();
+			PimCarryOverFileDefinition uploadFile = new PimCarryOverFileDefinition();
+			List<PimFile> pimFileList = new ArrayList<PimFile>();
+
+			ArrayList<String> columnNames = uploadFile.getColumnNames();
+
+			String[] firstLine = csvReader.readNext();
+
+			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
+
+			if (columnNames.size() != columnPositions.size()) {
+				System.out.println("column position map size not equal column name list size");
+				return null;
+			}
+
+			String[] dataLine = csvReader.readNext();
+
+			// read file lines
+			while(dataLine != null) {
+				
+				pimFile = new PimFile();
+
+				List<PimDelivery> pimDeliveries = getPimCarryoverDeliveries(dataLine, columnPositions);
+				Iterator<PimDelivery> itr = pimDeliveries.iterator();
+				while(itr.hasNext()) {
+					PimDelivery pimDelivery = itr.next();
+					pimFile.setCancelDate(pimDelivery.getCancelDate());
+					pimFile.setInDcDate(pimDelivery.getInDcDate());
+					pimFile.setShipDate(pimDelivery.getShipDate());
+					pimFile.setOrdQty(pimDelivery.getOrdQty());
+					pimFile.setPackQty(Integer.valueOf(dataLine[columnPositions.get(PimCarryOverFileDefinition.vendorPackQty)]));
+					pimFile.setUnitPrice(new BigDecimal(dataLine[columnPositions.get(PimCarryOverFileDefinition.price)]));
+					pimFile.setUpc(dataLine[columnPositions.get(PimCarryOverFileDefinition.upc)]);
+					pimFile.setVendorSku(dataLine[columnPositions.get(PimCarryOverFileDefinition.upc)]);
+					
+					pimFileList.add(pimFile);
+				}
+
+				dataLine = csvReader.readNext();
+
+			}
+			return pimFileList;
+		} catch (IOException e) {
+			e.printStackTrace();	
+		}
+		return null;
+	}
+	
+	/**
+	 * If there's an ordered qty for one of the delivery windows, return the qty and dates as list entries
+	 * 
+	 * @param dataLine
+	 * @param columnPositions
+	 * @return
+	 */
+	private List<PimDelivery> getPimCarryoverDeliveries(String[] dataLine, Map<String, Integer> columnPositions) {
+		List<PimDelivery> pimDeliveries = new ArrayList<PimDelivery>();
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimCarryOverFileDefinition.ordQty1)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimCarryOverFileDefinition.ordQty1)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.cancelDate1)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.inDcDate1)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.startShipDate1)]));
+			pimDeliveries.add(pimDelivery);
+		}
+
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimCarryOverFileDefinition.ordQty2)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimCarryOverFileDefinition.ordQty2)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.cancelDate2)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.inDcDate2)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.startShipDate2)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimCarryOverFileDefinition.ordQty3)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimCarryOverFileDefinition.ordQty3)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.cancelDate3)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.inDcDate3)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimCarryOverFileDefinition.startShipDate3)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		return pimDeliveries;
 	}
 }

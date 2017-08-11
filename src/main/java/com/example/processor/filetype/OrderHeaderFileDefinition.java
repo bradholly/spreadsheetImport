@@ -2,14 +2,10 @@ package com.example.processor.filetype;
 
 import java.util.ArrayList;
 
-import com.example.util.Constants;
-
 public class OrderHeaderFileDefinition extends FileDefinition {
 	public OrderHeaderFileDefinition() {
 		ArrayList<String> columnNames = getColumnNames();
 		
-		setFileNameContains(Constants.orderHeaderFile);
-
 		columnNames.add("OrderNoCompany");			//0
 		columnNames.add("PONum");					//1
 		columnNames.add("Warehouse");				//2
