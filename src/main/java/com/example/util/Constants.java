@@ -16,7 +16,8 @@ public final class Constants {
 	
 	public static final String pimFile = "pimregular";
 	public static final String pimCarryoverFile = "pimcarryover";
-	public static final String pimUrl = jpaUrl.concat("orderPims");
+	public static final String pimUrl = jpaUrl.concat("pims");
+	public static final String pimSearchUrl = jpaUrl.concat("pims/search/findByUpcAndShipDate?upc={upc}&shipDate={shipDate}");
 	
 	public static final String skuFile = "sku";
 	public static final String skuUrl = jpaUrl.concat("skus");

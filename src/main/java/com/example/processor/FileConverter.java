@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.example.processor.filetype.LeadTimeFile;
@@ -335,7 +336,7 @@ public class FileConverter {
 						skuFile.setDivision(Integer.valueOf(dataLine[position]));
 						break;
 					case 7:
-						if(StringUtils.isNumeric(dataLine[position])) {
+						if(NumberUtils.isCreatable(dataLine[position])) {
 							skuFile.setUnitPrice(new BigDecimal(dataLine[position]));
 						}
 						break;
@@ -458,6 +459,7 @@ public class FileConverter {
 
 			ArrayList<String> columnNames = uploadFile.getColumnNames();
 
+			csvReader.readNext(); // skip first line
 			String[] firstLine = csvReader.readNext();
 
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
@@ -467,6 +469,9 @@ public class FileConverter {
 				return null;
 			}
 
+			csvReader.readNext(); // skip lines 3-5
+			csvReader.readNext();
+			csvReader.readNext();
 			String[] dataLine = csvReader.readNext();
 
 			// read file lines

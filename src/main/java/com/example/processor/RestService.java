@@ -145,8 +145,46 @@ public class RestService {
 		}
 	}
 
-	public Object putPim(PimFile pimFile) {
-		// TODO Auto-generated method stub
-		return null;
+	public void putPim(PimFile pimFile) {
+		// we need to execute a get to determine if there's already a PIM for the UPC/start ship date so we know to post or put
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("upc", pimFile.getUpc());
+		params.put("shipDate", pimFile.getShipDate().toString());
+
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Object> entity = new HttpEntity<Object>(headers);
+
+			ResponseEntity<String> out = new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+			try {
+				out = rt.exchange(Constants.pimSearchUrl, HttpMethod.GET, entity, String.class, params);
+			} catch (HttpClientErrorException e) {
+				if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+					out = new ResponseEntity<String>(e.getStatusCode());
+				} else {
+					throw e;
+				}
+			}
+			System.out.println(out.getBody());
+			System.out.println(out.getStatusCode());
+
+			// http 200 means we have existing record to update
+			// htto 404 means no data found so create new record
+			if (out.getStatusCode().is2xxSuccessful()) {
+				ObjectMapper om = new ObjectMapper();
+				om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				PimFile json = om.readValue(out.getBody().getBytes(), PimFile.class);
+				logger.debug(json.get_links().getSelf().getHref());
+				rt.put(json.get_links().getSelf().getHref(), pimFile);
+			} else if (out.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+				rt.postForLocation(Constants.pimUrl, pimFile);
+			} else {
+				logger.error("unknown error performing pim search: BODY: " + out.getBody() + " STATUS: " + out.getStatusCodeValue());
+				return;
+			}
+		} catch (Exception e) {
+			logger.error("error calling pim search service", e);
+		}
 	}
 }

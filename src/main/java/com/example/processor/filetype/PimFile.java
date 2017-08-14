@@ -3,6 +3,8 @@ package com.example.processor.filetype;
 import java.math.BigDecimal;
 import java.sql.Date;
 
+import com.example.processor.filetype.links.Links;
+
 public class PimFile {
 	private Integer pimPk;
 	private String upc;				//0
@@ -13,8 +15,14 @@ public class PimFile {
 	private String vendorSku;		//5
 	private Date shipDate;			//6
 	private Date cancelDate;		//7
+	private Links _links;
 	
-	
+	public Links get_links() {
+		return _links;
+	}
+	public void set_links(Links _links) {
+		this._links = _links;
+	}
 	public Integer getPimPk() {
 		return pimPk;
 	}
