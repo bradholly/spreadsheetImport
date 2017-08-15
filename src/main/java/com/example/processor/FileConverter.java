@@ -533,6 +533,42 @@ public class FileConverter {
 			pimDeliveries.add(pimDelivery);
 		}
 		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty3)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty3)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate3)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimFileDefinition.inDcDate3)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimFileDefinition.startShipDate3)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty4)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty4)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate4)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimFileDefinition.inDcDate4)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimFileDefinition.startShipDate4)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty5)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty5)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate5)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimFileDefinition.inDcDate5)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimFileDefinition.startShipDate5)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty6)])) {
+			PimDelivery pimDelivery = new PimDelivery();
+			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty6)]));
+			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate6)]));
+			pimDelivery.setInDcDate(getDate(dataLine[columnPositions.get(PimFileDefinition.inDcDate6)]));
+			pimDelivery.setShipDate(getDate(dataLine[columnPositions.get(PimFileDefinition.startShipDate6)]));
+			pimDeliveries.add(pimDelivery);
+		}
+		
 		return pimDeliveries;
 	}
 

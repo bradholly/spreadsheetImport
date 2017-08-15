@@ -86,7 +86,8 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        boolean result = FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        boolean result2 = result;
     }
 
     @Override

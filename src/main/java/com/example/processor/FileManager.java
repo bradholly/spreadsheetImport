@@ -66,6 +66,7 @@ public class FileManager {
 		});
 
 		storageService.deleteAll();
+        storageService.init();
 
 		logger.debug("finish processFiles(StorageService storageService)");
 	}
