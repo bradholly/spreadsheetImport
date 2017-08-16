@@ -26,6 +26,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile('org.apache.commons:commons-lang3:3.6')
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
 	compile('com.opencsv:opencsv:3.10')	
 	compile('com.fasterxml.jackson.core:jackson-core:2.9.0')
 	compile('org.springframework:spring-web')

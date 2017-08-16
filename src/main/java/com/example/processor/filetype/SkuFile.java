@@ -16,6 +16,9 @@ public class SkuFile {
 	private String wmStyle;			//10
 	private String wmItem;			//11
 	private Integer fineLine;		//12
+	private BigDecimal weight;		//13
+	private BigDecimal volume;		//14
+	
 	
 	
 	public Integer getItemNo() {
@@ -95,6 +98,18 @@ public class SkuFile {
 	}
 	public void setWmItem(String wmItem) {
 		this.wmItem = wmItem;
+	}
+	public BigDecimal getWeight() {
+		return weight;
+	}
+	public void setWeight(BigDecimal weight) {
+		this.weight = weight;
+	}
+	public BigDecimal getVolume() {
+		return volume;
+	}
+	public void setVolume(BigDecimal volume) {
+		this.volume = volume;
 	}
 	
 	

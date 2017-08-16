@@ -14,6 +14,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.example.processor.filetype.LeadTimeFile;
@@ -38,6 +40,8 @@ import com.opencsv.CSVReader;
  */
 @Component
 public class FileConverter {
+	Logger logger = LoggerFactory.getLogger(FileConverter.class);
+	
 	/**
 	 * Convert CSVReader into list of OrderHeaderFile
 	 * 
@@ -46,7 +50,6 @@ public class FileConverter {
 	 */
 	public List<OrderHeaderFile> getOrderHeaderContents(CSVReader csvReader) {
 		try {
-			OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
 			OrderHeaderFileDefinition uploadFile = new OrderHeaderFileDefinition();
 			List<OrderHeaderFile> orderHeaderFileList = new ArrayList<OrderHeaderFile>();
 
@@ -57,7 +60,7 @@ public class FileConverter {
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
 
 			if (columnNames.size() != columnPositions.size()) {
-				System.out.println("column position map size not equal column name list size");
+				logger.error("column position map size not equal column name list size");
 				return null;
 			}
 
@@ -65,7 +68,7 @@ public class FileConverter {
 
 			// read file lines
 			while(dataLine != null) {
-				orderHeaderFile = new OrderHeaderFile();
+				OrderHeaderFile orderHeaderFile = new OrderHeaderFile();
 				Iterator<String> i = columnNames.iterator();
 				Integer count = 0;
 				// read file columns
@@ -166,7 +169,7 @@ public class FileConverter {
 
 	public Date getDate(String dateStr) {
 		try {
-			final SimpleDateFormat sdf1 = new SimpleDateFormat("mm/dd/yy"); 
+			final SimpleDateFormat sdf1 = new SimpleDateFormat("M/d/y"); 
 			java.util.Date date = sdf1.parse(dateStr); 
 			java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());
 			return sqlStartDate;
@@ -188,34 +191,8 @@ public class FileConverter {
 		}
 	}
 
-	//	public String getJson(OrderHeaderFile orderHeaderFile) {
-	//		String json = null;
-	//		final ObjectMapper mapper = new ObjectMapper();
-	//		final OutputStream out = new ByteArrayOutputStream();
-	//
-	//		try {
-	//			mapper.writeValue(out, orderHeaderFile);
-	//
-	//			String result = out.toString();
-	//			System.out.println(new String(result));
-	//			return result;
-	//		} catch (JsonGenerationException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		} catch (JsonMappingException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		} catch (IOException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
-	//
-	//		return null;
-	//	}
-
 	public List<OrderDetailFile> getOrderDetailContents(CSVReader csvReader) {
 		try {
-			OrderDetailFile orderDetailFile = new OrderDetailFile();
 			OrderDetailFileDefinition uploadFile = new OrderDetailFileDefinition();
 			List<OrderDetailFile> orderDetailFileList = new ArrayList<OrderDetailFile>();
 
@@ -226,7 +203,7 @@ public class FileConverter {
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
 
 			if (columnNames.size() != columnPositions.size()) {
-				System.out.println("column position map size not equal column name list size");
+				logger.error("column position map size not equal column name list size");
 				return null;
 			}
 
@@ -234,7 +211,7 @@ public class FileConverter {
 
 			// read file lines
 			while(dataLine != null) {
-				orderDetailFile = new OrderDetailFile();
+				OrderDetailFile orderDetailFile = new OrderDetailFile();
 				Iterator<String> i = columnNames.iterator();
 				Integer count = 0;
 
@@ -285,7 +262,6 @@ public class FileConverter {
 
 	public List<SkuFile> getSkuContents(CSVReader csvReader) {
 		try {
-			SkuFile skuFile = new SkuFile();
 			SkuFileDefinition uploadFile = new SkuFileDefinition();
 			List<SkuFile> skuFileList = new ArrayList<SkuFile>();
 
@@ -296,7 +272,7 @@ public class FileConverter {
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
 
 			if (columnNames.size() != columnPositions.size()) {
-				System.out.println("column position map size not equal column name list size");
+				logger.error("column position map size not equal column name list size");
 				return null;
 			}
 
@@ -304,7 +280,7 @@ public class FileConverter {
 
 			// read file lines
 			while(dataLine != null) {
-				skuFile = new SkuFile();
+				SkuFile skuFile = new SkuFile();
 				Iterator<String> i = columnNames.iterator();
 				Integer count = 0;
 
@@ -357,6 +333,16 @@ public class FileConverter {
 							skuFile.setFineLine(Integer.valueOf(dataLine[position]));							
 						}
 						break;
+					case 13:
+						if(NumberUtils.isCreatable(dataLine[position])) {
+							skuFile.setWeight(new BigDecimal(dataLine[position]));							
+						}
+						break;
+					case 14:
+						if(NumberUtils.isCreatable(dataLine[position])) {
+							skuFile.setVolume(new BigDecimal(dataLine[position]));							
+						}
+						break;
 					}
 					count++;
 				}
@@ -374,7 +360,6 @@ public class FileConverter {
 
 	public List<LeadTimeFile> getLeadTimeContents(CSVReader csvReader) {
 		try {
-			LeadTimeFile leadTimeFile = new LeadTimeFile();
 			LeadTimeFileDefinition uploadFile = new LeadTimeFileDefinition();
 			List<LeadTimeFile> leadTimeFileList = new ArrayList<LeadTimeFile>();
 
@@ -385,7 +370,7 @@ public class FileConverter {
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
 
 			if (columnNames.size() != columnPositions.size()) {
-				System.out.println("column position map size not equal column name list size");
+				logger.error("column position map size not equal column name list size");
 				return null;
 			}
 
@@ -393,7 +378,7 @@ public class FileConverter {
 
 			// read file lines
 			while(dataLine != null) {
-				leadTimeFile = new LeadTimeFile();
+				LeadTimeFile leadTimeFile = new LeadTimeFile();
 				Iterator<String> i = columnNames.iterator();
 				Integer count = 0;
 
@@ -453,36 +438,33 @@ public class FileConverter {
 
 	public List<PimFile> getPimContents(CSVReader csvReader) {
 		try {
-			PimFile pimFile = new PimFile();
 			PimFileDefinition uploadFile = new PimFileDefinition();
 			List<PimFile> pimFileList = new ArrayList<PimFile>();
 
 			ArrayList<String> columnNames = uploadFile.getColumnNames();
 
 			csvReader.readNext(); // skip first line
-			String[] firstLine = csvReader.readNext();
+			String[] firstLine = trimStringArray(csvReader.readNext());
 
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
 
 			if (columnNames.size() != columnPositions.size()) {
-				System.out.println("column position map size not equal column name list size");
+				logger.error("column position map size not equal column name list size");
 				return null;
 			}
 
 			csvReader.readNext(); // skip lines 3-5
 			csvReader.readNext();
 			csvReader.readNext();
-			String[] dataLine = csvReader.readNext();
+			String[] dataLine = trimStringArray(csvReader.readNext());
 
 			// read file lines
 			while(dataLine != null) {
-				
-				pimFile = new PimFile();
-
 				List<PimDelivery> pimDeliveries = getPimDeliveries(dataLine, columnPositions);
 				Iterator<PimDelivery> itr = pimDeliveries.iterator();
 				while(itr.hasNext()) {
 					PimDelivery pimDelivery = itr.next();
+					PimFile pimFile = new PimFile();
 					pimFile.setCancelDate(pimDelivery.getCancelDate());
 					pimFile.setInDcDate(pimDelivery.getInDcDate());
 					pimFile.setShipDate(pimDelivery.getShipDate());
@@ -495,12 +477,14 @@ public class FileConverter {
 					pimFileList.add(pimFile);
 				}
 
-				dataLine = csvReader.readNext();
+				dataLine = trimStringArray(csvReader.readNext());
 
 			}
 			return pimFileList;
 		} catch (IOException e) {
-			e.printStackTrace();	
+			logger.error("caught IOException processing pim file contents", e);
+		} catch (Exception e) {
+			logger.error("caught Exception processing pim file contents", e);
 		}
 		return null;
 	}
@@ -515,7 +499,8 @@ public class FileConverter {
 	private List<PimDelivery> getPimDeliveries(String[] dataLine, Map<String, Integer> columnPositions) {
 		List<PimDelivery> pimDeliveries = new ArrayList<PimDelivery>();
 		
-		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty1)])) {
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty1)])
+				&& 0 < Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty1)])) {
 			PimDelivery pimDelivery = new PimDelivery();
 			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty1)]));
 			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate1)]));
@@ -524,7 +509,8 @@ public class FileConverter {
 			pimDeliveries.add(pimDelivery);
 		}
 		
-		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty2)])) {
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty2)])
+				&& 0 < Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty2)])) {
 			PimDelivery pimDelivery = new PimDelivery();
 			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty2)]));
 			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate2)]));
@@ -533,7 +519,8 @@ public class FileConverter {
 			pimDeliveries.add(pimDelivery);
 		}
 		
-		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty3)])) {
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty3)])
+				&& 0 < Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty3)])) {
 			PimDelivery pimDelivery = new PimDelivery();
 			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty3)]));
 			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate3)]));
@@ -542,7 +529,8 @@ public class FileConverter {
 			pimDeliveries.add(pimDelivery);
 		}
 		
-		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty4)])) {
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty4)])
+				&& 0 < Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty4)])) {
 			PimDelivery pimDelivery = new PimDelivery();
 			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty4)]));
 			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate4)]));
@@ -551,7 +539,8 @@ public class FileConverter {
 			pimDeliveries.add(pimDelivery);
 		}
 		
-		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty5)])) {
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty5)])
+				&& 0 < Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty5)])) {
 			PimDelivery pimDelivery = new PimDelivery();
 			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty5)]));
 			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate5)]));
@@ -560,7 +549,8 @@ public class FileConverter {
 			pimDeliveries.add(pimDelivery);
 		}
 		
-		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty6)])) {
+		if (StringUtils.isNumeric(dataLine[columnPositions.get(PimFileDefinition.ordQty6)])
+				&& 0 < Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty6)])) {
 			PimDelivery pimDelivery = new PimDelivery();
 			pimDelivery.setOrdQty(Integer.valueOf(dataLine[columnPositions.get(PimFileDefinition.ordQty6)]));
 			pimDelivery.setCancelDate(getDate(dataLine[columnPositions.get(PimFileDefinition.cancelDate6)]));
@@ -574,7 +564,6 @@ public class FileConverter {
 
 	public List<PimFile> getPimCarryoverContents(CSVReader csvReader) {
 		try {
-			PimFile pimFile = new PimFile();
 			PimCarryOverFileDefinition uploadFile = new PimCarryOverFileDefinition();
 			List<PimFile> pimFileList = new ArrayList<PimFile>();
 
@@ -585,7 +574,7 @@ public class FileConverter {
 			Map<String,Integer> columnPositions = getColumnPositions(firstLine,columnNames);
 
 			if (columnNames.size() != columnPositions.size()) {
-				System.out.println("column position map size not equal column name list size");
+				logger.error("column position map size not equal column name list size");
 				return null;
 			}
 
@@ -593,13 +582,11 @@ public class FileConverter {
 
 			// read file lines
 			while(dataLine != null) {
-				
-				pimFile = new PimFile();
-
 				List<PimDelivery> pimDeliveries = getPimCarryoverDeliveries(dataLine, columnPositions);
 				Iterator<PimDelivery> itr = pimDeliveries.iterator();
 				while(itr.hasNext()) {
 					PimDelivery pimDelivery = itr.next();
+					PimFile pimFile = new PimFile();
 					pimFile.setCancelDate(pimDelivery.getCancelDate());
 					pimFile.setInDcDate(pimDelivery.getInDcDate());
 					pimFile.setShipDate(pimDelivery.getShipDate());
@@ -660,5 +647,16 @@ public class FileConverter {
 		}
 		
 		return pimDeliveries;
+	}
+	
+	public String[] trimStringArray(String[] data) {
+		if (null == data) {
+			return data;
+		}
+		
+		for (int i = 0; i < data.length; i++) {
+			data[i] = data[i].trim();
+		}
+		return data;
 	}
 }

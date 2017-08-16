@@ -40,33 +40,48 @@ public class FileManager {
 
 		// iterate files from the storageService object
 		stream.forEach(filename->{
-			logger.debug("the file being processed is " + filename);
+			logger.info("the file being processed is " + filename.toString());
+			CSVReader csvReader = null;
+			try {
+				csvReader = getCsvReader(storageService, filename);
 
-			CSVReader csvReader = getCsvReader(storageService, filename);
+				if (null == csvReader) {
+					logger.debug("null csvReader, returning");
+					return;
+				}
 
-			if (null == csvReader) {
-				logger.debug("null csvReader, returning");
-				return;
-			}
+				// instantiate data object based on filename
+				if (filename.toString().contains(Constants.orderHeaderFile)) {
+					processOrderHeaderFile(csvReader);
+				} else if (filename.toString().contains(Constants.orderDetailFile)) {
+					processOrderDetailFile(csvReader);
+				} else if (filename.toString().contains(Constants.pimFile)) {
+					processPimFile(csvReader);
+				} else if (filename.toString().contains(Constants.pimCarryoverFile)) {
+					processPimCarryoverFile(csvReader);		
+				} else if (filename.toString().contains(Constants.skuFile)) {
+					processSkuFile(csvReader);
+				} else if (filename.toString().contains(Constants.leadTimeFile)) {
+					processLeadTimeFile(csvReader);
+				}
 
-			// instantiate data object based on filename
-			if (filename.toString().contains(Constants.orderHeaderFile)) {
-				processOrderHeaderFile(csvReader);
-			} else if (filename.toString().contains(Constants.orderDetailFile)) {
-				processOrderDetailFile(csvReader);
-			} else if (filename.toString().contains(Constants.pimFile)) {
-				processPimFile(csvReader);
-			} else if (filename.toString().contains(Constants.pimCarryoverFile)) {
-				processPimCarryoverFile(csvReader);		
-			} else if (filename.toString().contains(Constants.skuFile)) {
-				processSkuFile(csvReader);
-			} else if (filename.toString().contains(Constants.leadTimeFile)) {
-				processLeadTimeFile(csvReader);
+				csvReader.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error occurred processing file: " + filename.toString(), e);
+			} finally {
+				if (null != csvReader) {
+					try {
+						csvReader.close();
+					} catch(Exception e) {
+						logger.error("encountered error attempting to close csvReader", e);
+					}
+				}
 			}
 		});
 
 		storageService.deleteAll();
-        storageService.init();
+		storageService.init();
 
 		logger.debug("finish processFiles(StorageService storageService)");
 	}
@@ -107,7 +122,7 @@ public class FileManager {
 
 		pimFileList.forEach(pimFile->restService.putPim(pimFile));
 	}
-	
+
 	private void processPimCarryoverFile(CSVReader csvReader) {
 		logger.debug("converting pim carryover type file");
 		List<PimFile> pimFileList = new ArrayList<PimFile>();

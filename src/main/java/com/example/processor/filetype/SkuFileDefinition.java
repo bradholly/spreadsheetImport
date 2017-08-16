@@ -19,6 +19,8 @@ public class SkuFileDefinition extends FileDefinition {
 		columnNames.add("WMSTYLE#2");		//10
 		columnNames.add("WMITEM#2");		//11
 		columnNames.add("Fineline");		//12
+		columnNames.add("CSWeight");		//13		
+		columnNames.add("CSCubes");			//14
 		
 		setColumnNames(columnNames);
 	}

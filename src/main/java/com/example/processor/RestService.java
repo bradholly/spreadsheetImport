@@ -1,13 +1,10 @@
 package com.example.processor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -27,7 +24,6 @@ import com.example.processor.filetype.OrderHeaderFile;
 import com.example.processor.filetype.PimFile;
 import com.example.processor.filetype.SkuFile;
 import com.example.util.Constants;
-import com.example.util.LoggingRequestInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +40,12 @@ public class RestService {
 //		rt = restTemplateBuilder.interceptors(interceptors).build();
 		//@#@# end debugging code
 		
-		rt = restTemplateBuilder.build();
+		rt = restTemplateBuilder
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
+				.setConnectTimeout(120000)
+				.setReadTimeout(120000)
+				.build();
+		
 		rt.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 	}
 
@@ -74,8 +75,8 @@ public class RestService {
 					throw e;
 				}
 			}
-			System.out.println(out.getBody());
-			System.out.println(out.getStatusCode());
+			logger.debug(out.getBody());
+			logger.debug(out.getStatusCode().toString());
 
 			// http 200 means we have existing record to update
 			// htto 404 means no data found so create new record
@@ -123,9 +124,9 @@ public class RestService {
 					throw e;
 				}
 			}
-			System.out.println(out.getBody());
-			System.out.println(out.getStatusCode());
-
+			logger.debug(out.getBody());
+			logger.debug(out.getStatusCode().toString());
+					
 			// http 200 means we have existing record to update
 			// htto 404 means no data found so create new record
 			if (out.getStatusCode().is2xxSuccessful()) {
@@ -165,10 +166,12 @@ public class RestService {
 				} else {
 					throw e;
 				}
+			} catch (Exception e) {
+				logger.error("caught http error", e);
 			}
-			System.out.println(out.getBody());
-			System.out.println(out.getStatusCode());
-
+			logger.debug(out.getBody());
+			logger.debug(out.getStatusCode().toString());
+			
 			// http 200 means we have existing record to update
 			// htto 404 means no data found so create new record
 			if (out.getStatusCode().is2xxSuccessful()) {

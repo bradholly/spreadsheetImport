@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,9 +18,12 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.processor.FileManager;
+
 @Service
 public class FileSystemStorageService implements StorageService {
-
+	Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
+	
     private final Path rootLocation;
 
     @Autowired
@@ -86,8 +91,11 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void deleteAll() {
-        boolean result = FileSystemUtils.deleteRecursively(rootLocation.toFile());
-        boolean result2 = result;
+        if(FileSystemUtils.deleteRecursively(rootLocation.toFile())) {
+        	logger.info("work directory cleared successfully");
+        } else {
+        	logger.info("work directory not cleared");
+        }
     }
 
     @Override
