@@ -22,6 +22,7 @@ import com.example.processor.filetype.LeadTimeFile;
 import com.example.processor.filetype.OrderDetailFile;
 import com.example.processor.filetype.OrderHeaderFile;
 import com.example.processor.filetype.PimFile;
+import com.example.processor.filetype.PimFileDefinition;
 import com.example.processor.filetype.SkuFile;
 import com.example.util.Constants;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -151,6 +152,9 @@ public class RestService {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("upc", pimFile.getUpc());
 		params.put("shipDate", pimFile.getShipDate().toString());
+		params.put("color", pimFile.getColor());
+		params.put("size", pimFile.getSize());
+		
 
 		try {
 			HttpHeaders headers = new HttpHeaders();

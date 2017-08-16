@@ -473,7 +473,8 @@ public class FileConverter {
 					pimFile.setUnitPrice(new BigDecimal(dataLine[columnPositions.get(PimFileDefinition.price)]));
 					pimFile.setUpc(dataLine[columnPositions.get(PimFileDefinition.upc)]);
 					pimFile.setVendorSku(dataLine[columnPositions.get(PimFileDefinition.upc)]);
-					
+					pimFile.setColor(dataLine[columnPositions.get(PimFileDefinition.color)]);
+					pimFile.setSize(dataLine[columnPositions.get(PimFileDefinition.size)]);
 					pimFileList.add(pimFile);
 				}
 

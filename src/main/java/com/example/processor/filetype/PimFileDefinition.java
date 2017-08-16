@@ -7,7 +7,9 @@ public class PimFileDefinition extends FileDefinition{
 	public static final String vendorPackQty = "Vendor Pack Quantity";
 	public static final String price = "Initial Cost"; 
 	public static final String vendorSku = "Vendor Stock Number";
-
+	public static final String color = "Variant Value 1 - COLOR";
+	public static final String size = "Variant Value 2 - SIZE";
+	
 	public static final String ordQty1 = "1st Delivery Units";
 	public static final String startShipDate1 = "1st Ship Date";
 	public static final String inDcDate1 = "1st In-DC Date";
@@ -70,6 +72,8 @@ public class PimFileDefinition extends FileDefinition{
 		columnNames.add(startShipDate6);
 		columnNames.add(inDcDate6);
 		columnNames.add(cancelDate6);
+		columnNames.add(color);
+		columnNames.add(size);
 		
 		setColumnNames(columnNames);
 	}	

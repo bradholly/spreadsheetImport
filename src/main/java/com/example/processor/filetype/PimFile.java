@@ -15,6 +15,8 @@ public class PimFile {
 	private String vendorSku;		//5
 	private Date shipDate;			//6
 	private Date cancelDate;		//7
+	private String color;			//8
+	private String size;			//9
 	private Links _links;
 	
 	public Links get_links() {
@@ -76,6 +78,18 @@ public class PimFile {
 	}
 	public void setCancelDate(Date cancelDate) {
 		this.cancelDate = cancelDate;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+	public String getSize() {
+		return size;
+	}
+	public void setSize(String size) {
+		this.size = size;
 	}
 	
 	
